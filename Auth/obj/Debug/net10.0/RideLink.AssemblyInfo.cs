@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RideLink")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+51b05e6e8a78c51d8191342933a5bcc7845d8a7c")]
 [assembly: System.Reflection.AssemblyProductAttribute("RideLink")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RideLink")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

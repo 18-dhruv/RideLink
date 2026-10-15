@@ -21,7 +21,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         }
         else
         {
-            Logger.LogError("unhandled error");
+            Logger.LogError(exception,"unhandled error");
             StatusCode=500;
             message="internal server error";
         }
