@@ -18,6 +18,7 @@ builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TokenService>();
 
+builder.Services.AddHealthChecks();         // GET /health for docker compose and the gateway
 builder.Services.AddOpenApi();          // you already had this;
 
 var app = builder.Build();
@@ -29,5 +30,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.MapHealthChecks("/health");
 app.MapControllers();                   // 6. connects [Route]/[HttpPost] to the pipeline
 app.Run();

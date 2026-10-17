@@ -8,10 +8,12 @@ using System.Security.Claims;
 public class TokenService
 {
    private readonly IConfiguration configuration;
+   
    public TokenService(IConfiguration _configuration)
     {
         this.configuration=_configuration;
     }
+
     public string CreateToken(User user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
@@ -30,9 +32,8 @@ public class TokenService
         return new JsonWebTokenHandler().CreateToken(descriptor);
     } 
 
-    // public string CreateRefreshToken()
-    // {
-        
-    //     throw new NotImplementedException();
-    // }
+    public string CreateRefreshToken()
+    {
+        throw new NotImplementedException();
+    }
 }

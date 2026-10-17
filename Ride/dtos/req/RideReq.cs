@@ -1,0 +1,1 @@
+public record RideReq(string Pickup ,string Dropoff);

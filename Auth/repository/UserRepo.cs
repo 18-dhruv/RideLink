@@ -1,5 +1,6 @@
 using Auth.model;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 public class UserRepo:IUserRepo
 {
@@ -23,7 +24,18 @@ public class UserRepo:IUserRepo
     public async Task Add(User user)
     {
       UserSet.Add(user);
+      try
+      {
       await DbContext.SaveChangesAsync();
+      }   
+      catch(DbUpdateException e)
+      {
+        if(e.InnerException is PostgresException pg && pg.SqlState=="23505"){
+        throw new EntityAlreadyExist("email already exist");
+        }
+        throw;
+      }
+
     }
 
     public async Task<User> GetById(int id)

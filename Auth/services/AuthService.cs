@@ -2,6 +2,8 @@ using Auth.model;
 using Auth.dtos;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 public class AuthService
 {
@@ -13,10 +15,10 @@ public class AuthService
         this.UserRepo = userRepo;
     }
 
-    // public async Task<User> Login(string email, str=ring password)
     public async Task<User> Login(LoginReq req)
     {
-        var user = await UserRepo.GetByEmail(req.email);
+        var email = req.email.ToLower().Trim();
+        var user = await UserRepo.GetByEmail(email);
         if (user == null||PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, req.password) == PasswordVerificationResult.Failed)
         {
             throw new UnAutorizedUser("email or password is incorrect");
@@ -26,12 +28,14 @@ public class AuthService
 
     public async Task<User> Signin(RegisterReq req)
     {
-     var user= await UserRepo.GetByEmail(req.Email);
-        if (user != null)
+        var email = req.Email.ToLower().Trim();
+        var check = await UserRepo.GetByEmail(email);
+        if (check != null)
         {
-           throw new UnAutorizedUser("email already exist");
+            throw new EntityAlreadyExist("An account with this email already exsist");
         }
-            user = new User(req.Email, req.Name, req.role);
+    
+            var user = new User(email, req.Name, req.role);
             var passwordHash = PasswordHasher.HashPassword(user,req.password);
             user.SetPassword(passwordHash);
             await UserRepo.Add(user);

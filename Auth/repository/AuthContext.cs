@@ -15,7 +15,7 @@ public class AuthContext : DbContext
         modelBuilder.Entity<RefreshToken>()
         .HasOne<User>()
         .WithMany()
-        .HasForeignKey(e=>e.Id)
+        .HasForeignKey(e=>e.UserId)
         .OnDelete(deleteBehavior:DeleteBehavior.Cascade);
     }
 }
