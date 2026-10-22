@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "AGxMWeTjRzA=",
+  "dgSpecHash": "2ebbGur5GRo=",
   "success": true,
   "projectFilePath": "/Users/apple/Documents/RideLink/Driver/Driver.csproj",
   "expectedPackageFiles": [
@@ -14,6 +14,16 @@
     "/Users/apple/.nuget/packages/microsoft.identitymodel.protocols.openidconnect/8.19.2/microsoft.identitymodel.protocols.openidconnect.8.19.2.nupkg.sha512",
     "/Users/apple/.nuget/packages/microsoft.identitymodel.tokens/8.19.2/microsoft.identitymodel.tokens.8.19.2.nupkg.sha512",
     "/Users/apple/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512",
+    "/Users/apple/.nuget/packages/nlog/6.2.2/nlog.6.2.2.nupkg.sha512",
+    "/Users/apple/.nuget/packages/nlog.extensions.logging/6.2.2/nlog.extensions.logging.6.2.2.nupkg.sha512",
+    "/Users/apple/.nuget/packages/nlog.web.aspnetcore/6.2.2/nlog.web.aspnetcore.6.2.2.nupkg.sha512",
+    "/Users/apple/.nuget/packages/opentelemetry/1.20.1/opentelemetry.1.20.1.nupkg.sha512",
+    "/Users/apple/.nuget/packages/opentelemetry.api/1.20.1/opentelemetry.api.1.20.1.nupkg.sha512",
+    "/Users/apple/.nuget/packages/opentelemetry.api.providerbuilderextensions/1.20.1/opentelemetry.api.providerbuilderextensions.1.20.1.nupkg.sha512",
+    "/Users/apple/.nuget/packages/opentelemetry.exporter.opentelemetryprotocol/1.20.1/opentelemetry.exporter.opentelemetryprotocol.1.20.1.nupkg.sha512",
+    "/Users/apple/.nuget/packages/opentelemetry.extensions.hosting/1.20.1/opentelemetry.extensions.hosting.1.20.1.nupkg.sha512",
+    "/Users/apple/.nuget/packages/opentelemetry.instrumentation.aspnetcore/1.20.1/opentelemetry.instrumentation.aspnetcore.1.20.1.nupkg.sha512",
+    "/Users/apple/.nuget/packages/opentelemetry.instrumentation.http/1.20.1/opentelemetry.instrumentation.http.1.20.1.nupkg.sha512",
     "/Users/apple/.nuget/packages/system.identitymodel.tokens.jwt/8.19.2/system.identitymodel.tokens.jwt.8.19.2.nupkg.sha512"
   ],
   "logs": [

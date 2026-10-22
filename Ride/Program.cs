@@ -2,11 +2,29 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NLog.Web;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Resources;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Controllers
 builder.Services.AddControllers();
+
+//nlog
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
+
+//openTelemetry
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(r => r.AddService("ride"))
+    .WithTracing(t => t
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter());
+
+builder.Logging.AddOpenTelemetry(o => o.AddOtlpExporter());
 
 // 2. Global exception handling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

@@ -16,6 +16,8 @@ public class GlobalExceptionHandler : IExceptionHandler
         string message;
         if(exception is CustomException customException)
         {
+            Logger.LogWarning("Request {Path} failed with {StatusCode}: {Message}",
+            httpContext.Request.Path, customException.StatusCode, customException.Message);
             StatusCode=customException.StatusCode;
             message=customException.Message;
         }

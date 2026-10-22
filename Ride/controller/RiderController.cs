@@ -11,9 +11,11 @@ public class RiderController : ControllerBase
     private readonly RideCreationService _rideCreationService;
     private readonly RideLifecycleService _rideLifecycleService;
     private readonly RideQueryService _rideQueryService;
+    private readonly ILogger<RiderController> _logger;
 
-    public RiderController(RideCreationService rideCreationService,RideLifecycleService rideLifecycleService,RideQueryService rideQueryService)
+    public RiderController(RideCreationService rideCreationService,RideLifecycleService rideLifecycleService,RideQueryService rideQueryService,ILogger<RiderController> logger)
     {
+        this._logger=logger;
         this._rideCreationService=rideCreationService;
         this._rideLifecycleService=rideLifecycleService;
         this._rideQueryService=rideQueryService;
@@ -26,7 +28,11 @@ public class RiderController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateRide([FromBody]RideReq req)
     {
+        _logger.LogInformation("Rider {UserId} is requesting a ride",CurrentUserId());
+
         var ride = await _rideCreationService.CreateRide(req,CurrentUserId());
+
+        _logger.LogInformation("Ride {RideId} created by rider {UserId}",ride.RideId,CurrentUserId());
         return CreatedAtAction(nameof(GetRide), new { id = ride.RideId }, new ApiResponse<RideRes>(true,"Ride created successfully",ride));
     }
 
@@ -34,6 +40,8 @@ public class RiderController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRide(int id)
     {
+        _logger.LogInformation("User {UserId} is fetching ride {RideId}",CurrentUserId(),id);
+
         var ride = await _rideQueryService.GetRide(id,CurrentUserId());
         return Ok(new ApiResponse<RideRes>(true,"Ride fetched successfully",ride));
     }
@@ -43,7 +51,11 @@ public class RiderController : ControllerBase
     [HttpPost("{id}/cancel")]
     public async Task<IActionResult> CancelRide(int id)
     {
+        _logger.LogInformation("Rider {UserId} is cancelling ride {RideId}",CurrentUserId(),id);
+
         var ride = await _rideLifecycleService.Cancel(id,CurrentUserId());
+
+        _logger.LogInformation("Ride {RideId} cancelled by rider {UserId}",id,CurrentUserId());
         return Ok(new ApiResponse<RideRes>(true,"Ride cancelled successfully",ride));
     }
 }
