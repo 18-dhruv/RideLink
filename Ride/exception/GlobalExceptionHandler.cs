@@ -25,12 +25,10 @@ public class GlobalExceptionHandler : IExceptionHandler
             StatusCode=500;
             message="internal server error";
         }
-        var log = new ProblemDetails();
-        log.Status=StatusCode;
-        log.Title=message;
-        
+        var response = new ApiResponse<object>(false,message,null);
+
         httpContext.Response.StatusCode=StatusCode;
-        await httpContext.Response.WriteAsJsonAsync(log,cancellationToken);
+        await httpContext.Response.WriteAsJsonAsync(response,cancellationToken);
         return true;
     }
 }

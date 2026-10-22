@@ -1,25 +1,28 @@
 using Microsoft.EntityFrameworkCore;
-
+using StackExchange.Redis;
+using Auth.service;
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Controllers
+//Controllers
 builder.Services.AddControllers();
 
-// 2. Global exception handling
+//Redis
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(builder.Configuration["redis:ConnectionString"]));
+//Global exception handling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-// 3. Database
+//Database
 builder.Services.AddDbContext<AuthContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AuthDb")));
 
-// 4. Your classes, in the order the controller needs them
+//Your classes, in the order the controller needs them
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TokenService>();
 
-builder.Services.AddHealthChecks();         // GET /health for docker compose and the gateway
-builder.Services.AddOpenApi();          // you already had this;
+builder.Services.AddHealthChecks();      // GET /health for docker compose and the gateway
+builder.Services.AddOpenApi();          //  you already had this;
 
 var app = builder.Build();
 

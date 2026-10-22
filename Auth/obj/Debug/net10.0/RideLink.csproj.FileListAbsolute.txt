@@ -130,3 +130,6 @@
 /Users/apple/Documents/RideLink/Auth/bin/Debug/net10.0/Microsoft.IdentityModel.Tokens.dll
 /Users/apple/Documents/RideLink/Auth/bin/Debug/net10.0/System.IdentityModel.Tokens.Jwt.dll
 /Users/apple/Documents/RideLink/Auth/obj/Debug/net10.0/RideLink.sourcelink.json
+/Users/apple/Documents/RideLink/Auth/bin/Debug/net10.0/RESPite.dll
+/Users/apple/Documents/RideLink/Auth/bin/Debug/net10.0/StackExchange.Redis.dll
+/Users/apple/Documents/RideLink/Auth/bin/Debug/net10.0/System.IO.Hashing.dll

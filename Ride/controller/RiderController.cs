@@ -27,14 +27,15 @@ public class RiderController : ControllerBase
     public async Task<IActionResult> CreateRide([FromBody]RideReq req)
     {
         var ride = await _rideCreationService.CreateRide(req,CurrentUserId());
-        return CreatedAtAction(nameof(GetRide), new { id = ride.RideId }, ride);
+        return CreatedAtAction(nameof(GetRide), new { id = ride.RideId }, new ApiResponse<RideRes>(true,"Ride created successfully",ride));
     }
 
     // GET /rides/{id}: the rider or the assigned driver (owner check is in RideQueryService)
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRide(int id)
     {
-        return Ok(await _rideQueryService.GetRide(id,CurrentUserId()));
+        var ride = await _rideQueryService.GetRide(id,CurrentUserId());
+        return Ok(new ApiResponse<RideRes>(true,"Ride fetched successfully",ride));
     }
 
     // POST /rides/{id}/cancel
@@ -42,6 +43,7 @@ public class RiderController : ControllerBase
     [HttpPost("{id}/cancel")]
     public async Task<IActionResult> CancelRide(int id)
     {
-        return Ok(await _rideLifecycleService.Cancel(id,CurrentUserId()));
+        var ride = await _rideLifecycleService.Cancel(id,CurrentUserId());
+        return Ok(new ApiResponse<RideRes>(true,"Ride cancelled successfully",ride));
     }
 }

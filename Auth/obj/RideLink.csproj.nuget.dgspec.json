@@ -64,9 +64,17 @@
               "target": "Package",
               "version": "[10.0.12, )"
             },
+            "NLog.Web.AspNetCore": {
+              "target": "Package",
+              "version": "[6.2.2, )"
+            },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
               "version": "[10.0.3, )"
+            },
+            "StackExchange.Redis": {
+              "target": "Package",
+              "version": "[3.4.5, )"
             }
           },
           "imports": [

@@ -1,20 +1,24 @@
 using Auth.model;
 using Auth.dtos;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
+using StackExchange.Redis;
+using System.Security.Cryptography;
 
+using System.Runtime.Intrinsics.Arm;
+namespace Auth.service;
 public class AuthService
 {
     private readonly PasswordHasher<User> PasswordHasher = new PasswordHasher<User>();
     private readonly IUserRepo UserRepo;
-
-    public AuthService(IUserRepo userRepo)
+    private readonly IConnectionMultiplexer _redis;
+    public AuthService(IUserRepo userRepo,IConnectionMultiplexer redis)
     {
         this.UserRepo = userRepo;
+        this._redis =redis;
     }
 
+
+    //login 
     public async Task<User> Login(LoginReq req)
     {
         var email = req.email.ToLower().Trim();
@@ -26,6 +30,8 @@ public class AuthService
         return user;
     }
 
+
+  //signup
     public async Task<User> Signin(RegisterReq req)
     {
         var email = req.Email.ToLower().Trim();
@@ -40,5 +46,44 @@ public class AuthService
             user.SetPassword(passwordHash);
             await UserRepo.Add(user);
             return user;
+    }
+
+
+   
+    public async Task ResetPassword(ResetPasswordReq req)
+    {
+        byte[] token = Convert.FromHexString(req.Token);
+        string key = "pw_reset:" + Convert.ToHexString(SHA256.HashData(token));
+        IDatabase db = _redis.GetDatabase();
+        var userId =await  db.StringGetDeleteAsync(key);
+        if (userId.IsNull)
+        {
+            throw new UnAutorizedUser("invalid or expired token");
+        }
+        var user = await UserRepo.GetById(int.Parse(userId));
+        var newHashPassword = PasswordHasher.HashPassword(user,req.NewPassword);
+        user.SetPassword(newHashPassword);
+        await UserRepo.Update(user);
+        return;
+    }
+
+     //forgot Password 
+    // for the dehashing logic first convert the string to bytes then dehash
+        public async Task<string> ForgotPassword(string email)
+    {
+        var user = await UserRepo.GetByEmail(email);
+        if (user==null)
+        {
+            return "";
+        }
+      
+      byte[] tokenBytes = RandomNumberGenerator.GetBytes(32);
+      string token = Convert.ToHexString(tokenBytes);
+      string tokenHash = Convert.ToHexString(SHA256.HashData(tokenBytes));
+      string key = "pw_reset:" + tokenHash;
+
+      IDatabase db = _redis.GetDatabase();
+      await db.StringSetAsync(key, user.Id, TimeSpan.FromSeconds(150));
+      return token;
     }
 }

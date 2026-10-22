@@ -1,0 +1,15 @@
+$kind: http-request
+name: ""
+url: http://localhost:5218/auth/health
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "Email":"dhryvddogra6325@gmail.com"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: ""
+order: 1000

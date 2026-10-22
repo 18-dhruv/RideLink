@@ -1,9 +1,9 @@
 using Auth.model;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Text;
 using System.Security.Claims;
+namespace Auth.service;
 
 public class TokenService
 {
@@ -36,4 +36,6 @@ public class TokenService
     {
         throw new NotImplementedException();
     }
+
+   
 }

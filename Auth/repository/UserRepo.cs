@@ -58,4 +58,10 @@ public class UserRepo:IUserRepo
         await DbContext.SaveChangesAsync();
         return user;
     }
+
+    public async Task Update(User user)
+    {
+        UserSet.Update(user);
+        await DbContext.SaveChangesAsync();
+    }
 }

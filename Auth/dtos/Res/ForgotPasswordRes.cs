@@ -1,0 +1,1 @@
+public record class ForgotPasswordRes(string token);
