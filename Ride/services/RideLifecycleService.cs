@@ -28,7 +28,7 @@ public class RideLifecycleService(IRideRepo rideRepo)
         ride.Status=RideStatus.Accepted;
         ride.AcceptedAt=DateTime.UtcNow;
         await _rideRepo.Update(ride);
-        var rideRes= new RideRes(ride.Id,ride.DriverId,ride.Status,ride.Pickup,ride.Dropoff);
+        var rideRes= RideRes.FromRide(ride);
         return rideRes;
     }
 
@@ -49,7 +49,7 @@ public class RideLifecycleService(IRideRepo rideRepo)
         ride.Status=RideStatus.InProgress;
         ride.StartedAt=DateTime.UtcNow;
         await _rideRepo.Update(ride);
-        var rideRes= new RideRes(ride.Id,ride.DriverId,ride.Status,ride.Pickup,ride.Dropoff);
+        var rideRes= RideRes.FromRide(ride);
         return rideRes;
     }
 
@@ -70,7 +70,7 @@ public class RideLifecycleService(IRideRepo rideRepo)
         ride.Status=RideStatus.Completed;
         ride.CompletedAt=DateTime.UtcNow;
         await _rideRepo.Update(ride);
-        var rideRes= new RideRes(ride.Id,ride.DriverId,ride.Status,ride.Pickup,ride.Dropoff);
+        var rideRes= RideRes.FromRide(ride);
         return rideRes;
     }
 
@@ -91,7 +91,7 @@ public class RideLifecycleService(IRideRepo rideRepo)
         ride.Status=RideStatus.Cancelled;
         ride.CancelledAt=DateTime.UtcNow;
         await _rideRepo.Update(ride);
-        var rideRes= new RideRes(ride.Id,ride.DriverId,ride.Status,ride.Pickup,ride.Dropoff);
+        var rideRes= RideRes.FromRide(ride);
         return rideRes;
     }
 
@@ -113,7 +113,7 @@ public class RideLifecycleService(IRideRepo rideRepo)
         ride.Status=RideStatus.Cancelled;
         ride.CancelledAt=DateTime.UtcNow;
         await _rideRepo.Update(ride);
-        var rideRes= new RideRes(ride.Id,ride.DriverId,ride.Status,ride.Pickup,ride.Dropoff);
+        var rideRes= RideRes.FromRide(ride);
         return rideRes;
     }
 }

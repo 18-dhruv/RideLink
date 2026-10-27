@@ -31,7 +31,7 @@ public class RiderController : ControllerBase
         _logger.LogInformation("Rider {UserId} is requesting a ride",CurrentUserId());
 
         var ride = await _rideCreationService.CreateRide(req,CurrentUserId());
-
+        _logger.LogInformation("trying to publish ride ");
         _logger.LogInformation("Ride {RideId} created by rider {UserId}",ride.RideId,CurrentUserId());
         return CreatedAtAction(nameof(GetRide), new { id = ride.RideId }, new ApiResponse<RideRes>(true,"Ride created successfully",ride));
     }

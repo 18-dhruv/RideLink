@@ -21,7 +21,7 @@ Why RideLink is built the way it is. Newest at the bottom. Each entry: the decis
 ## 2026-10-19 to 2026-10-21: Redis
 
 - **Redis image `redis:7.4-alpine`.**
-  Older images (Redis 5) lack `GETDEL` and `GEOSEARCH`.
+  Older images (Redis 5) lack `GETDEL` and `GEOSEARCH`.(we can also use PostGis here but to reduce the pressure on db we using redis geo which will help us to reduce db calls and also will be fast).
 - **One `IConnectionMultiplexer` registered as a singleton.**
   Connecting is expensive and the multiplexer is thread-safe and reconnects itself (StackExchange.Redis docs).
 - **Password reset tokens live in Redis, not Postgres.**
@@ -46,3 +46,7 @@ Why RideLink is built the way it is. Newest at the bottom. Each entry: the decis
 - **Consumers must tolerate duplicates** (Kafka is at-least-once).
 - **Order of work:** logging/tracing (OpenTelemetry + SigNoz), NUnit tests, Redis GEO in Driver, then Kafka.
 - **SigNoz runs as its own compose project**, separate from RideLink's, because it is heavy (ClickHouse, ~4 GB RAM).
+
+
+## **Flow**
+- **rider** will first publishing the ride to **kafka** and the **driver service** will consume this and save it to **redis** then the drivers can call through simple http request and get rides withing in 5km. Then the driver will change the status using the the **ride service**.

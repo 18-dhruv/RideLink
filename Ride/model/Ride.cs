@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace RideService.model;
 
 public class Ride : IEntity<int>
@@ -6,7 +8,9 @@ public class Ride : IEntity<int>
     public int RiderId { get; set; }
     public int? DriverId { get; set; }
     public string Pickup { get; set; }
+    public Coordinates  PickupCoordinates{get;set;}
     public string Dropoff { get; set; }
+    public Coordinates DropoffCoordinates { get; set; }
     public RideStatus Status { get; set; }
 
 
@@ -20,6 +24,15 @@ public class Ride : IEntity<int>
     // accepting the same ride at once can't both win
     public uint Version { get; set; }
 
+    public void SetPickupCoordinate(Coordinates coordinates)
+    {
+        this.PickupCoordinates=coordinates;
+    }
+
+     public void SetDropoffCoordinate(Coordinates coordinates)
+    {
+       this.DropoffCoordinates=coordinates;
+    }
     public Ride(int riderId, string pickup, string dropoff)
     {
         this.RiderId = riderId;
@@ -29,7 +42,7 @@ public class Ride : IEntity<int>
         this.CreatedAt = DateTime.UtcNow;
     }
 }
-
+public record Coordinates([Range(-90, 90)] double Latitude, [Range(-180, 180)] double Longitude);
 public enum RideStatus
 {
     Requested,

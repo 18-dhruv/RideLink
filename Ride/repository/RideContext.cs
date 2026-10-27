@@ -22,5 +22,9 @@ public class RideContext : DbContext
         // GET /rides/available filters on Status, so index it
         modelBuilder.Entity<Ride>()
             .HasIndex(e => e.Status);
+
+        // store coordinates as columns on the rides table
+        modelBuilder.Entity<Ride>().ComplexProperty(r => r.PickupCoordinates);
+        modelBuilder.Entity<Ride>().ComplexProperty(r => r.DropoffCoordinates);
     }
 }

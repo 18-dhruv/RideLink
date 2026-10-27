@@ -21,6 +21,6 @@ public class RideQueryService
         {
             throw new ForbiddenAction("you can only see your own rides");
         }
-        return new RideRes(ride.Id,ride.DriverId,ride.Status,ride.Pickup,ride.Dropoff);
+        return RideRes.FromRide(ride);
     }
 }

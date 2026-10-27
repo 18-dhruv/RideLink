@@ -33,6 +33,7 @@ services:
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       ConnectionStrings__RideDb: Host=postgres;Port=5432;Database=ride_db;Username=postgres;Password=${DB_PASSWORD}
+      Kafka__BootstrapServers: kafka:29092
       Jwt__Key: ${JWT_KEY}
     depends_on:
       postgres:
@@ -43,6 +44,7 @@ services:
     ports: ["5220:8080"]
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      Kafka__BootstrapServers: kafka:29092
       Jwt__Key: ${JWT_KEY}
   
   redis:
@@ -57,6 +59,46 @@ services:
       interval: 5s
       retries: 10
 
+  kafka:
+    image: apache/kafka:3.9.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: HOST://0.0.0.0:9092,DOCKER://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: HOST://localhost:9092,DOCKER://kafka:29092,CONTROLLER://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: HOST:PLAINTEXT,DOCKER:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+    volumes:
+      - kafkadata:/var/lib/kafka/data
+
+  kafka-init:
+    image: apache/kafka:3.9.0
+    depends_on:
+      - kafka
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "until /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --list; do sleep 2; done;
+       /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic ride-events --partitions 3 --replication-factor 1"
+
+  kafka-ui:
+    image: ghcr.io/kafbat/kafka-ui:v1.0.0
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: ridelink
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      - kafka
+
   otel-collector:
     image: otel/opentelemetry-collector:0.111.0
     command: ["--config=/etc/otelcol/config.yaml"]
@@ -69,3 +111,4 @@ services:
 volumes:
   pgdata:
   redisdata:
+  kafkadata:

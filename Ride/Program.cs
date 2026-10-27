@@ -64,6 +64,14 @@ builder.Services.AddScoped<RideLifecycleService>();
 builder.Services.AddScoped<RideCreationService>();
 builder.Services.AddScoped<RideQueryService>();
 
+// Kafka: settings from the "Kafka" section, app refuses to start if they are missing
+builder.Services.AddOptions<KafkaSettings>()
+    .Bind(builder.Configuration.GetSection("Kafka"))
+    .Validate(s => s.BootstrapServers != "", "Kafka:BootstrapServers is missing")
+    .Validate(s => s.RideTopic != "", "Kafka:RideTopic is missing")
+    .ValidateOnStart();
+builder.Services.AddSingleton<RidePublish>();   // one producer for the whole app
+
 // 6. Health endpoint for docker compose and the gateway
 builder.Services.AddHealthChecks();
 
