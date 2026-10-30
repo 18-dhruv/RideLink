@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Ride")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1cbf2daef3716b7a53f15e94cfe879447a5ae73e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7ff4ed4535599deba8526f954bd46a9a375605a1")]
 [assembly: System.Reflection.AssemblyProductAttribute("Ride")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Ride")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
