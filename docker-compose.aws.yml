@@ -1,61 +1,73 @@
 services:
-  # postgres:
-  #   image: postgres:17
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
-  #   ports: ["5432:5432"]
-  #   volumes:
-  #     - pgdata:/var/lib/postgresql/data
-  #     - ./postgres/init:/docker-entrypoint-initdb.d:ro
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
-  #     interval: 5s
-  #     retries: 10
-
-  auth:
-    build: ./Auth
-    ports: ["5218:8080"]
+  auth-migrate:
+    build:
+      context: ./Auth
+      target: migrator
     environment:
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      ConnectionStrings__AuthDb: Host=${DB_Host};Port=5432;Database=auth_db;Username=postgres;Password=${DB_PASSWORD}
+      ConnectionStrings__AuthDb: Host=${DB_HOST};Port=5432;Database=auth_db;Username=postgres;Password=${DB_PASSWORD}
       Jwt__Key: ${JWT_KEY}
       redis__ConnectionString: redis:6379
     depends_on:
-      # postgres:
-      #   condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  ride-migrate:
+    build:
+      context: ./Ride
+      target: migrator
+    environment:
+      ConnectionStrings__RideDb: Host=${DB_HOST};Port=5432;Database=ride_db;Username=postgres;Password=${DB_PASSWORD}
+      Jwt__Key: ${JWT_KEY}
+
+  auth:
+    build:
+      context: ./Auth
+      target: final   # migrator is now the LAST stage, so name the API stage
+    restart: unless-stopped
+    ports: ["5218:8080"]
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      ConnectionStrings__AuthDb: Host=${DB_HOST};Port=5432;Database=auth_db;Username=postgres;Password=${DB_PASSWORD}
+      Jwt__Key: ${JWT_KEY}
+      redis__ConnectionString: redis:6379
+    depends_on:
+      auth-migrate:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
 
   ride:
-    build: ./Ride
+    build:
+      context: ./Ride
+      target: final
+    restart: unless-stopped
     ports: ["5219:8080"]
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      ConnectionStrings__RideDb: Host=${DB_Host};Port=5432;Database=ride_db;Username=postgres;Password=${DB_PASSWORD}
+      ConnectionStrings__RideDb: Host=${DB_HOST};Port=5432;Database=ride_db;Username=postgres;Password=${DB_PASSWORD}
       Kafka__BootstrapServers: kafka:29092
       Jwt__Key: ${JWT_KEY}
     depends_on:
-      # -postgres:
-      #   condition: service_healthy
-      - kafka
+      ride-migrate:
+        condition: service_completed_successfully
+      kafka-init:
+        condition: service_completed_successfully
 
   driver:
     build: ./Driver
+    restart: unless-stopped
     ports: ["5220:8080"]
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       Kafka__BootstrapServers: kafka:29092
       Jwt__Key: ${JWT_KEY}
     depends_on:
-      # -postgres:
-      #   condition: service_healthy
-        - kafka
+      kafka-init:
+        condition: service_completed_successfully
 
   redis:
     image: redis:7.4-alpine
-    ports:
-      - "6379:6379"
+    restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redisdata:/data
@@ -67,8 +79,7 @@ services:
   kafka:
     image: apache/kafka:3.9.0
     container_name: kafka
-    ports:
-      - "9092:9092"
+    restart: unless-stopped
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -82,6 +93,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_HEAP_OPTS: "-Xmx512m -Xms512m"
     volumes:
       - kafkadata:/var/lib/kafka/data
 
@@ -94,26 +106,13 @@ services:
       "until /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --list; do sleep 2; done;
        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic ride-events --partitions 3 --replication-factor 1"
 
-  kafka-ui:
-    image: ghcr.io/kafbat/kafka-ui:v1.0.0
-    ports:
-      - "8090:8080"
-    environment:
-      KAFKA_CLUSTERS_0_NAME: ridelink
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-    depends_on:
-      - kafka
-
   otel-collector:
     image: otel/opentelemetry-collector:0.111.0
+    restart: unless-stopped
     command: ["--config=/etc/otelcol/config.yaml"]
     volumes:
       - ./otel/collector-config.yaml:/etc/otelcol/config.yaml:ro
-    ports:
-      - "4317:4317"
-      - "4318:4318"
 
 volumes:
-  # pgdata:
   redisdata:
   kafkadata:
