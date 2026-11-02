@@ -46,6 +46,8 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       Kafka__BootstrapServers: kafka:29092
       Jwt__Key: ${JWT_KEY}
+    depends_on:
+      - kafka
   
   redis:
     image: redis:7.4-alpine

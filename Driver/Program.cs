@@ -1,3 +1,5 @@
+using Driver.config;
+using Driver.service;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -53,6 +55,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // 4. Your classes (Redis store and driver services go here next)
+builder.Services.AddOptions<KafkaSettings>()
+    .Bind(builder.Configuration.GetSection("Kafka"))
+    .Validate(s => s.BootstrapServers != "" && s.RideTopic != "" && s.GroupId != "", "Kafka settings missing")
+    .ValidateOnStart();
+builder.Services.AddHostedService<ConsumeRideEvent>();
 
 // 5. Health endpoint for docker compose and the gateway
 builder.Services.AddHealthChecks();

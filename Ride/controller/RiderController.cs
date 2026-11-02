@@ -1,7 +1,8 @@
+using RideService.model;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+namespace Ride.controller;
 // Rider side of /rides: request a ride, read it, cancel it.
 [ApiController]
 [Route("rides")]
@@ -25,13 +26,11 @@ public class RiderController : ControllerBase
 
     // POST /rides
     [Authorize(Roles ="Rider")]
-    [HttpPost]
+    [HttpPost("create_ride")]
     public async Task<IActionResult> CreateRide([FromBody]RideReq req)
     {
         _logger.LogInformation("Rider {UserId} is requesting a ride",CurrentUserId());
-
         var ride = await _rideCreationService.CreateRide(req,CurrentUserId());
-        _logger.LogInformation("trying to publish ride ");
         _logger.LogInformation("Ride {RideId} created by rider {UserId}",ride.RideId,CurrentUserId());
         return CreatedAtAction(nameof(GetRide), new { id = ride.RideId }, new ApiResponse<RideRes>(true,"Ride created successfully",ride));
     }
