@@ -2,7 +2,7 @@ using RideService.model;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-namespace Ride.controller;
+namespace RideService.controller;
 // Rider side of /rides: request a ride, read it, cancel it.
 [ApiController]
 [Route("rides")]

@@ -18,7 +18,7 @@ services:
     ports: ["5218:8080"]
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      ConnectionStrings__AuthDb: Host=postgres;Port=5432;Database=auth_db;Username=postgres;Password=${DB_PASSWORD}
+      ConnectionStrings__AuthDb: Host=${Db_Host};Port=5432;Database=auth_db;Username=postgres;Password=${DB_PASSWORD}
       Jwt__Key: ${JWT_KEY}
       redis__ConnectionString: redis:6379
     depends_on:
@@ -32,11 +32,13 @@ services:
     ports: ["5219:8080"]
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      ConnectionStrings__RideDb: Host=postgres;Port=5432;Database=ride_db;Username=postgres;Password=${DB_PASSWORD}
+      ConnectionStrings__RideDb: Host=${Db_Host};Port=5432;Database=ride_db;Username=postgres;Password=${DB_PASSWORD}
       Kafka__BootstrapServers: kafka:29092
       Jwt__Key: ${JWT_KEY}
     depends_on:
-      postgres:
+      -postgres:
+        condition: service_healthy
+      -kafka:
         condition: service_healthy
 
   driver:
@@ -47,8 +49,11 @@ services:
       Kafka__BootstrapServers: kafka:29092
       Jwt__Key: ${JWT_KEY}
     depends_on:
-      - kafka
-  
+      -postgres:
+        condition: service_healthy
+      -kafka:
+        condition: service_healthy
+
   redis:
     image: redis:7.4-alpine
     ports:
